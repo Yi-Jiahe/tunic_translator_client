@@ -91,7 +91,7 @@ export default function Rune(props: RuneProps) {
                             line(0, 3)
                         }
                         {props.segments.has(7) &&
-                            line(1, 9)
+                            line(1, 3)
                         }
                         {props.segments.has(8) &&
                             line(2, 3)
@@ -104,6 +104,9 @@ export default function Rune(props: RuneProps) {
                         }
                         {props.segments.has(11) &&
                             line(4, 5)
+                        }
+                        {(props.segments.has(7) || (props.segments.has(10) && (props.segments.has(6) || props.segments.has(8)))) &&
+                            line(3, 9)
                         }
                     </g>
 
