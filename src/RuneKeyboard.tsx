@@ -14,6 +14,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
     const [pointerIsDown, setPointerIsDown] = useState(false);
     const [path, setPath] = useState<number[]>([]);
     const [segments, setSegments] = useState<Set<number>[]>([]);
+    const [hidden, setHidden] = useState(true);
 
     const fontSize = 40;
     const points = Points.map((point) => [point[0] * fontSize, point[1] * fontSize])
@@ -26,9 +27,9 @@ export default function RuneKeyboard(props: RuneInputProps) {
             left: e.target.offsetLeft,
             top: e.target.offsetTop
         };
-        
+
         let reference = e.target.offsetParent;
-        while(reference instanceof HTMLDivElement){
+        while (reference instanceof HTMLDivElement) {
             offset.left += reference.offsetLeft;
             offset.top += reference.offsetTop;
             reference = reference.offsetParent;
@@ -51,7 +52,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
         const point = touchedPoints[0];
         if (point === null) { return; }
 
-        if (point !== path[path.length-1]) {
+        if (point !== path[path.length - 1]) {
             setPath([...path, point]);
         }
     }
@@ -59,7 +60,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
     const up = () => {
         console.log(path);
         const newSegments = new Set<number>();
-        
+
         let lastPoint: number;
         path.forEach((point) => {
             if (point === 12) {
@@ -72,7 +73,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
             }
             lastPoint = point;
         });
-        
+
         setPath([]);
 
         if (newSegments.size > 0) {
@@ -91,7 +92,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
 
     const onMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
         if (!pointerIsDown) return;
-        
+
         checkPoint(e);
     };
 
@@ -108,7 +109,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
         checkPoint(e.touches[0]);
     }
 
-    const onTouchMove = (e: React.TouchEvent) => {      
+    const onTouchMove = (e: React.TouchEvent) => {
         checkPoint(e.touches[0]);
     }
 
@@ -123,46 +124,54 @@ export default function RuneKeyboard(props: RuneInputProps) {
     }
 
     return (
-        <div id="rune-keyboard">
-            <div>
-                <div className="rune-input">
-                    <Rune className='visual'
-                        fontSize={fontSize}
-                        drawPoints
-                        segments={segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([]))} 
+        <div id="rune-keyboard"
+            className={hidden ? 'hide' : 'show'} >
+            <button className='toggle-keyboard-button'
+                onClick={e => {
+                    setHidden(!hidden);
+                }}>
+                {hidden ? '∧' : '∨'}</button>
+            <div className='keyboard-main'>
+                <div className='right-bar' />
+                <div>
+                    <div className="rune-input">
+                        <Rune className='visual'
+                            fontSize={fontSize}
+                            drawPoints
+                            segments={segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([]))}
                         />
-                    <div className='input-capturer'
-                        onMouseDown={onMouseDown}
-                        onMouseMove={onMouseMove}
-                        onMouseUp={onMouseUp}
+                        <div className='input-capturer'
+                            onMouseDown={onMouseDown}
+                            onMouseMove={onMouseMove}
+                            onMouseUp={onMouseUp}
 
-                        onTouchStart={onTouchStart}
-                        onTouchMove={onTouchMove}
-                        onTouchEnd={onTouchEnd}
-                    />
+                            onTouchStart={onTouchStart}
+                            onTouchMove={onTouchMove}
+                            onTouchEnd={onTouchEnd}
+                        />
+                    </div>
+                    <button className='space-bar'
+                        onClick={e => {
+                            props.handleSpace(segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([])));
+                            setSegments([]);
+                        }}>⎵</button>
                 </div>
-                <button className='space-bar'
-                    onClick={e=> { 
-                        props.handleSpace(segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([])));
-                        setSegments([]);
-                    }}>⎵</button>
+                <div className='side-bar'>
+                    <button className='backspace-button'
+                        onClick={e => {
+                            props.handleBackspace();
+                            setSegments([]);
+                        }}>←</button>
+                    <button className='undo-button'
+                        onClick={onUndoClick}>⟲</button>
+                    <button className='enter-button'
+                        onClick={e => {
+                            props.handleEnter(segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([])));
+                            setSegments([]);
+                        }}>↩</button>
+                    <button className='cancel-button'
+                        onClick={e => { setSegments([]); }}>⨉</button>
+                </div>
             </div>
-            <div className='side-bar'>
-                <button className='backspace-button'
-                    onClick={e => { 
-                        props.handleBackspace();
-                        setSegments([]);
-                    }}>←</button>
-                <button className='undo-button'
-                    onClick={onUndoClick}>⟲</button>
-                <button className='enter-button'
-                    onClick={e => { 
-                        props.handleEnter(segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([])));
-                        setSegments([]);
-                    }}>↩</button>
-                <button className='cancel-button'
-                    onClick={e => { setSegments([]); }}>⨉</button>
-            </div>
-
         </div>);
 }
