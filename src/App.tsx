@@ -9,7 +9,7 @@ function App() {
   fetch(`${endpoint}/ping`, {
     method: 'POST',
     body: JSON.stringify({
-        'input': ''
+      'input': ''
     })
   })
 
@@ -21,9 +21,11 @@ function App() {
         </div>
       </div>
       <footer>
-        <span><a href="https://www.reddit.com/r/TunicGame/comments/tgc056/tunic_language_reference_sheet_big_spoiler/">Tunic Language Reference Sheet</a></span>
+        <span><a href="https://www.reddit.com/r/TunicGame/comments/tgc056/tunic_language_reference_sheet_big_spoiler/"
+          target="_blank" rel="noopener noreferrer">Tunic Language Reference Sheet</a></span>
         <span> • </span>
-        <span><a href="https://github.com/Yi-Jiahe/tunic_language">Source</a></span>
+        <span><a href="https://github.com/Yi-Jiahe/tunic_language"
+          target="_blank" rel="noopener noreferrer">Source</a></span>
       </footer>
     </div>
   );
