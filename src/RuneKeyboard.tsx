@@ -14,7 +14,7 @@ export default function RuneKeyboard(props: RuneInputProps) {
     const [pointerIsDown, setPointerIsDown] = useState(false);
     const [path, setPath] = useState<number[]>([]);
     const [segments, setSegments] = useState<Set<number>[]>([]);
-    const [hidden, setHidden] = useState(true);
+    const [hidden, setHidden] = useState(false);
 
     const fontSize = 40;
     const points = Points.map((point) => [point[0] * fontSize, point[1] * fontSize])
