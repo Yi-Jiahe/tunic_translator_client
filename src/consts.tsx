@@ -1,4 +1,5 @@
 // (0, 0) is the centre of the separator line
+// x is positive rightwards, y is positive downwards
 const X = Math.sqrt(2);
 const Y = 1;
 const Points = [

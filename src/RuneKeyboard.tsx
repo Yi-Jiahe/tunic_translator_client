@@ -20,20 +20,20 @@ export default function RuneKeyboard(props: RuneInputProps) {
     const fontSize = 40;
     const points = Points.map((point) => [point[0] * fontSize, point[1] * fontSize])
     const radius = 15;
+    const canvasWidth = 180;
+    const canvasHeight = 250;
 
     const canvasDraw = (x: number, y: number) => {
         if (canvasRef === null) { return; }
         const canvas = canvasRef.current;
         if (canvas === null) { return; }
 
-        const width = canvas.width;
-        const height = canvas.height;
         const ctx = canvas.getContext('2d', { willReadFrequently: true });
         if (ctx === null) { return; }
-        var canvasData = ctx.getImageData(0, 0, width, height);
+        var canvasData = ctx.getImageData(0, 0, canvasWidth, canvasHeight);
 
         const drawPixel = (x: number, y: number, r: number, g: number, b: number, a: number) => {
-            var index = (x + y * width) * 4;
+            var index = (x + y * canvasWidth) * 4;
             
             canvasData.data[index + 0] = r;
             canvasData.data[index + 1] = g;
@@ -41,11 +41,30 @@ export default function RuneKeyboard(props: RuneInputProps) {
             canvasData.data[index + 3] = a;
         }
 
-        for (let i=0; i<10; i++) {
-            drawPixel(x - width/2 + (Math.floor(Math.random() * 5) - 5), y - height/2 - (Math.floor(Math.random() * 5) - 5), 0, 0, 255, 255);
+        for (let i=0; i<5; i++) {
+            const theta = Math.random() * 2 * Math.PI;
+            const r = Math.random() * radius;
+            const pixelX = Math.floor(x + canvasWidth/2 + r * Math.cos(theta));
+            if (pixelX < 0 || pixelX > canvasWidth) { continue; }
+            const pixelY = Math.floor(y + canvasHeight/2 + r * Math.sin(theta));
+            if (pixelY < 0 || pixelY > canvasHeight) { continue; }
+
+            drawPixel(
+                pixelX, pixelY, 0, 0, 0, Math.floor((1 - (r / radius)) * 255));
         }
 
         ctx.putImageData(canvasData, 0, 0);
+    }
+
+    const clearCanvas = () => {
+        if (canvasRef === null) { return; }
+        const canvas = canvasRef.current;
+        if (canvas === null) { return; }
+
+        const ctx = canvas.getContext('2d');
+        if (ctx === null) { return; }
+
+        ctx.clearRect(0, 0, canvasWidth, canvasHeight);
     }
 
     const checkPoint = (e: React.MouseEvent<HTMLDivElement> | React.Touch) => {
@@ -88,6 +107,8 @@ export default function RuneKeyboard(props: RuneInputProps) {
     }
 
     const up = () => {
+        clearCanvas();
+
         console.log(path);
         const newSegments = new Set<number>();
 
@@ -170,7 +191,8 @@ export default function RuneKeyboard(props: RuneInputProps) {
                             drawPoints
                             segments={segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([]))}
                         />
-                        <canvas className='path-canvas touch-area' ref={canvasRef} />
+                        <canvas className='path-canvas touch-area' ref={canvasRef} 
+                            width={canvasWidth} height={canvasHeight}/>
                         <div className='input-capturer touch-area'
                             onMouseDown={onMouseDown}
                             onMouseMove={onMouseMove}
