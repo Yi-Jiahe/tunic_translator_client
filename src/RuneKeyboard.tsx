@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import './RuneKeyboard.css';
 import Rune from './Rune';
 import { Points, PointPairsToSegments } from './consts';
@@ -15,10 +15,38 @@ export default function RuneKeyboard(props: RuneInputProps) {
     const [path, setPath] = useState<number[]>([]);
     const [segments, setSegments] = useState<Set<number>[]>([]);
     const [hidden, setHidden] = useState(false);
+    const canvasRef = useRef<HTMLCanvasElement>(null);
 
     const fontSize = 40;
     const points = Points.map((point) => [point[0] * fontSize, point[1] * fontSize])
     const radius = 15;
+
+    const canvasDraw = (x: number, y: number) => {
+        if (canvasRef === null) { return; }
+        const canvas = canvasRef.current;
+        if (canvas === null) { return; }
+
+        const width = canvas.width;
+        const height = canvas.height;
+        const ctx = canvas.getContext('2d', { willReadFrequently: true });
+        if (ctx === null) { return; }
+        var canvasData = ctx.getImageData(0, 0, width, height);
+
+        const drawPixel = (x: number, y: number, r: number, g: number, b: number, a: number) => {
+            var index = (x + y * width) * 4;
+            
+            canvasData.data[index + 0] = r;
+            canvasData.data[index + 1] = g;
+            canvasData.data[index + 2] = b;
+            canvasData.data[index + 3] = a;
+        }
+
+        for (let i=0; i<10; i++) {
+            drawPixel(x - width/2 + (Math.floor(Math.random() * 5) - 5), y - height/2 - (Math.floor(Math.random() * 5) - 5), 0, 0, 255, 255);
+        }
+
+        ctx.putImageData(canvasData, 0, 0);
+    }
 
     const checkPoint = (e: React.MouseEvent<HTMLDivElement> | React.Touch) => {
         if (!(e.target instanceof HTMLDivElement)) return;
@@ -38,6 +66,8 @@ export default function RuneKeyboard(props: RuneInputProps) {
         const localX = e.clientX - offset.left;
         const localY = e.clientY - offset.top;
         // console.log('local position', localX, localY);
+
+        canvasDraw(localX, localY);
 
         const touchedPoints = points.map((point, i) => {
             if (i >= 8 && i < 12) { return null; }
@@ -134,13 +164,14 @@ export default function RuneKeyboard(props: RuneInputProps) {
             <div className='keyboard-main'>
                 <div className='right-bar' />
                 <div>
-                    <div className="rune-input">
+                    <div className='rune-input'>
                         <Rune className='visual'
                             fontSize={fontSize}
                             drawPoints
                             segments={segments.reduce((p, c) => new Set([...Array.from(p), ...Array.from(c)]), new Set([]))}
                         />
-                        <div className='input-capturer'
+                        <canvas className='path-canvas touch-area' ref={canvasRef} />
+                        <div className='input-capturer touch-area'
                             onMouseDown={onMouseDown}
                             onMouseMove={onMouseMove}
                             onMouseUp={onMouseUp}
