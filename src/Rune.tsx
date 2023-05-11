@@ -54,9 +54,9 @@ export default function Rune(props: RuneProps) {
                     {
                         (() => {
                             let circles = points.filter((_, i) => (i < 8) || i === 12)
-                                .map((point) => {
+                                .map((point, i) => {
                                     return (<circle
-                                        cx={point[0]} cy={point[1]} r={pointRadius} strokeWidth={strokeWidth} className='point'
+                                        cx={point[0]} cy={point[1]} r={pointRadius} strokeWidth={strokeWidth} className='point' key={i}
                                     />);
                                 });
                             return circles;
