@@ -2,7 +2,7 @@ import React from 'react';
 import './App.css';
 import Translate from './Translate';
 
-const endpoint = "https://tunic-language-zic4jhgpva-as.a.run.app";
+const endpoint = process.env.REACT_TRANSLATION_ENDPOINT;
 
 function App() {
   // Send request on load to warm endpoint
