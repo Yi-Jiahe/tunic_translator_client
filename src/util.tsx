@@ -1,7 +1,13 @@
 import { ReactNode } from 'react';
 import Rune from './Rune';
 
-const RenderTokens = (tokens: Array<Array<[Array<number>, Array<string>]> | string>): ReactNode =>  {
+export function getRequiredEnv(name: string): string {
+    const v = process.env[name];
+    if (!v) throw new Error(`${name} environment variable is not set`);
+    return v;
+}
+
+const RenderTokens = (tokens: Array<Array<[Array<number>, Array<string>]> | string>): ReactNode => {
     return tokens.map((token: Array<[Array<number>, Array<string>]> | string, i) => {
         if (Array.isArray(token)) {
             return (
@@ -11,7 +17,7 @@ const RenderTokens = (tokens: Array<Array<[Array<number>, Array<string>]> | stri
                             return (
                                 <Rune key={`${i}, ${j}`}
                                     title={rune[1] === null ?
-                                        "-" : 
+                                        "-" :
                                         rune[1].join("")
                                     }
                                     segments={new Set(rune[0])} />);

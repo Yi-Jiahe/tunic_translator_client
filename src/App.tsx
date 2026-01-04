@@ -1,11 +1,9 @@
 import React from 'react';
 import './App.css';
 import Translate from './Translate';
+import { getRequiredEnv } from './util';
 
-const endpoint = process.env.REACT_APP_TRANSLATION_ENDPOINT;
-if (!endpoint) {
-  throw new Error("REACT_APP_TRANSLATION_ENDPOINT not set");
-}
+const endpoint = getRequiredEnv("REACT_APP_TRANSLATION_ENDPOINT");
 
 function App() {
   // Send request on load to warm endpoint
